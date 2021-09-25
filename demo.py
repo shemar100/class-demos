@@ -13,13 +13,16 @@ cursor.execute('''
     );
 ''')
 
+#dictionary assigned to variable data
+data = {
+    'id' : 3,
+    'completed' : True
+}
+
 cursor.execute('INSERT INTO table3 (id, completed) VALUES (%s, %s)', (1, True))
 cursor.execute('INSERT INTO table3 (id, completed) VALUES (%s, %s)', (2, False))
 #using named variable ins string composition - In this case rather than using tuple we use dictionary
-cursor.execute('INSERT INTO table3 (id, completed) VALUES (%(id)s, %(completed)s)', {
-    'id' : 3,
-    'completed' : True
-})
+cursor.execute('INSERT INTO table3 (id, completed) VALUES (%(id)s, %(completed)s)', data)
 
 
 connection.commit() 
