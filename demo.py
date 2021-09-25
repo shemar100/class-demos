@@ -4,6 +4,8 @@ connection = psycopg2.connect('dbname=example')
 
 cursor = connection.cursor()
 
+cursor.execute('DROP TABLE IF EXISTS table3')
+
 cursor.execute('''
     CREATE TABLE table3(
         id INTEGER PRIMARY KEY,
@@ -11,7 +13,14 @@ cursor.execute('''
     );
 ''')
 
-cursor.execute('INSERT INTO table3 (id, completed) VALUES (1, true)')
+cursor.execute('INSERT INTO table3 (id, completed) VALUES (%s, %s)', (1, True))
+cursor.execute('INSERT INTO table3 (id, completed) VALUES (%s, %s)', (2, False))
+#using named variable ins string composition - In this case rather than using tuple we use dictionary
+cursor.execute('INSERT INTO table3 (id, completed) VALUES (%(id)s, %(completed)s)', {
+    'id' : 3,
+    'completed' : True
+})
+
 
 connection.commit() 
 
