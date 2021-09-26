@@ -1,16 +1,46 @@
 <html>
   <head>
     <title>Todo App</title>
+    <style>
+      .hidden {
+          display: none;
+      }
+    </style>
   </head>
   <body>
-    <form method="post" action="/todos/create">
-        <input type="text" name="description"/>
+    <div id="error" class="hidden">Something went wrong</div>
+    <form id="form">
+        <input type="text" name="description" id="description"/>
         <input type="submit" value="Create" />
     </form>
-    <ul>
+    <ul id="todos">
       {% for d in data %}
       <li>{{ d.description }}</li>
       {% endfor %}
     </ul>
+    <script>
+        document.getElementById('form').onsubmit = function(e) {
+            e.preventDefault();
+            fetch('/todos/create', {
+                method: 'POST',
+                body : JSON.stringify({
+                    'description' : document.getElementById('description').value
+                }),
+                headers: {
+                    'Content-Type' : 'application/json'
+                }
+            }).then(function(response) {
+                return response.json();
+            }).then(function(jsonResponse) {
+                console.log(jsonResponse);
+                const liItem = document.createElement('LI'); //Create a new li HTML element
+                liItem.innerHTML = jsonResponse['description']; // Set the li to jsonResponse gotten back from server
+                document.getElementById('todos').appendChild(liItem); //append li to the todos list
+                document.getElementById('error').className = 'hidden';
+            }).catch(function () {
+                document.getElementById('error').className = '';
+            })
+        }
+    </script>
   </body>
 </html>

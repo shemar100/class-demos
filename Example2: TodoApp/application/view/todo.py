@@ -1,5 +1,5 @@
 from application import app, db
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, jsonify
 from application.model import Todo
 
 
@@ -10,8 +10,10 @@ def index():
 
 @app.route('/todos/create', methods=['POST'])
 def todos_create():
-    description = request.form.get('description', '')
+    description = request.get_json()['description']
     todo = Todo(description=description)
     db.session.add(todo)
     db.session.commit()
-    return redirect(url_for('index'))
+    return jsonify({
+        'description' : todo.description
+    })
