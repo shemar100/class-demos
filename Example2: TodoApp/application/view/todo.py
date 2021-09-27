@@ -47,5 +47,5 @@ def delete_todos(todo_id):
     Todo.query.filter_by(id=todo_id).delete()
     db.session.commit()
     return jsonify({
-        'Success' : True
+        'success' : True
     })
