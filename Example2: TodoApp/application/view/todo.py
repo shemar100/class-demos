@@ -1,4 +1,5 @@
 from os import abort
+import re
 from application import app, db
 from flask import render_template, request, redirect, url_for, jsonify
 from application.model import Todo, TodoList
@@ -82,3 +83,24 @@ def create_list():
         abort(500)
     else:
         return jsonify(body)
+
+@app.route('/lists/<list_id>/set-completed', methods=['POST'])
+def set_completed_list(list_id):
+    error = False
+    try:
+        #backref list.todo access todo model
+        list = TodoList.query.get(list_id)
+        for todo in list.todos:
+            todo.completed = True
+    
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+
+    if error:
+        abort(500)
+    else:
+        return 'success', 200

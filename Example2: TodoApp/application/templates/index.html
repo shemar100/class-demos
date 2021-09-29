@@ -47,9 +47,11 @@
       </form>
       <div id="error" class="hidden">Something went wrong!</div>
       <ul id="lists">
+        
         {% for item in lists %}
-          
+        
         <li>
+          <input type="checkbox" data-id="{{ item.id }}" class="list-check-completed">
           <a href="/lists/{{item.id}}">{{item.name}}</a>
         </li>
         {% endfor %}
@@ -92,11 +94,36 @@
 
         }
 
+        const list_checkboxes = document.querySelectorAll('.list-check-completed');
+        for( let i = 0; i < list_checkboxes.length; i++) {
+            const checkbox = list_checkboxes[i];
+            checkbox.onchange = function (e) {
+                if (e.target.checked) {
+                    const listId = e.target.dataset['id'];
+                     fetch('/lists/' + listId + '/set-completed', {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type' : 'application/json'
+                         }
+                     })
+                     .then (function(jsonResponse){
+                         document.getElementById('error').className = 'hidden';
 
+                         const todo_checkboxes = document.querySelectorAll('.check-completed');
+                         for (let i = 0; i < todo_checkboxes.length ; i++) {
+                             const checkbox = todo_checkboxes[i];
+                             checkbox.checked = true;
+                         }
+                     }).catch(function(){
+                         document.getElementById('error').className = '';
+                     })
+                }
+            }
+        }
 
         const todo_checkboxes = document.querySelectorAll('.check-completed');
         for (let i =0; i < todo_checkboxes.length; i++) {
-            const checkbox = checkboxes[i];
+            const checkbox = todo_checkboxes[i];
             checkbox.onchange = function (e) {
                 console.log('event', e);
                 const todoId = e.target.dataset['id'];
