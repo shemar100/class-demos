@@ -53,6 +53,7 @@
         <li>
           <input type="checkbox" data-id="{{ item.id }}" class="list-check-completed">
           <a href="/lists/{{item.id}}">{{item.name}}</a>
+          <button class="list-delete-button" data-id="{{ item.id }}">&cross;</button>
         </li>
         {% endfor %}
       </ul>
@@ -81,7 +82,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script>
-        const deleteTodos = document.querySelectorAll('.delete-todo');
+        const deleteTodos = document.querySelectorAll('.delete-button');
         for(let i = 0; i < deleteTodos.length; i++) {
             const btn = deleteTodos[i];
             btn.onclick = function (e) {
@@ -89,9 +90,34 @@
                 const todoId = e.target.dataset['id'];
                 fetch('/todos/' + todoId, {
                     method: 'DELETE'
-                });
+                }).then(function(){
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById("error").className = "hidden";
+                }).catch(function(){
+                    document.getElementById('error').className = ''
+                })
             }
 
+        }
+
+        const deleteLists = document.querySelectorAll('.list-delete-button');
+        for(let i = 0; i < deleteLists.length; i++) {
+            const btn = deleteLists[i];
+            btn.onclick = function(e) {
+                listId = e.target.dataset['id'];
+                console.log('event', e);
+                fetch('/lists/' + listId + '/delete', {
+                    method: 'DELETE'
+                }).then(function() {
+                    const item =  e.target.parentElement;
+                    item.remove();
+                    document.getElementById('error').className = 'hidden';
+                    window.location.reload(true);
+                }).catch(function() {
+                    document.getElementById('error').className = '';
+                })
+            }
         }
 
         const list_checkboxes = document.querySelectorAll('.list-check-completed');
@@ -163,6 +189,7 @@
                 liItem.innerHTML = jsonResponse['description']; // Set the li to jsonResponse gotten back from server
                 document.getElementById('todos').appendChild(liItem); //append li to the todos list
                 document.getElementById('error').className = 'hidden';
+                window.location.reload(true);
             }).catch(function () {
                 document.getElementById('error').className = '';
             })
@@ -186,6 +213,7 @@
                 liItem.innerHTML = jsonResponse['name'];
                 document.getElementById('lists').appendChild(liItem);
                 document.getElementById('error').className = 'hidden';
+                window.location.reload(true);
 
               }).catch(function () {
                 document.getElementById('error').className = '';

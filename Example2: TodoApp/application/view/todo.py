@@ -103,4 +103,24 @@ def set_completed_list(list_id):
     if error:
         abort(500)
     else:
-        return 'success', 200
+        return '', 200
+
+
+@app.route('/lists/<list_id>/delete', methods=['DELETE'])
+def delete_list(list_id):
+    error = False
+    try:
+        list = TodoList.query.get(list_id)
+        for todo in list.todos:
+            db.session.delete(todo)
+        db.session.delete(list)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+    if error:
+        abort(500)
+    else:
+        return jsonify({'sucess' : True })
