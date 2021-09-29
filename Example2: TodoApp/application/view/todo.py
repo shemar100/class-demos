@@ -1,3 +1,4 @@
+from os import abort
 from application import app, db
 from flask import render_template, request, redirect, url_for, jsonify
 from application.model import Todo, TodoList
@@ -10,10 +11,14 @@ def todos_create():
     body = {}
     try:
         description = request.get_json()['description']
-        todo = Todo(description=description)
+        list_id = request.get_json()['list_id']
+        todo = Todo(description=description, completed=False, list_id=list_id)
         db.session.add(todo)
         db.session.commit()
+        body['id'] = todo.id
+        body['complete'] = todo.completed
         body['description'] = todo.description
+        
     except:
         error = True #Setting error to true if there is an exception running application
         db.session.rollback()
@@ -45,14 +50,35 @@ def delete_todos(todo_id):
         'success' : True
     })
 
-
-@app.route('/list/<list_id>')
-def get_list_todos(list_id):
-    list = TodoList.query.all()
-    todos = Todo.query.filter_by(list_id=list_id).order_by('id').all()
-    return render_template('index.html', todos=todos, list=list)
-
 #redirects home route to get_list_todos route eg. list/num
 @app.route('/')
 def index():
     return redirect(url_for('get_list_todos', list_id=1))
+
+@app.route('/lists/<list_id>')
+def get_list_todos(list_id):
+    lists = TodoList.query.all()
+    todos = Todo.query.filter_by(list_id=list_id).order_by('id').all()
+    active_list = TodoList.query.get(list_id) #based on the list_id returns the current list route to view
+    return render_template('index.html', todos=todos, lists=lists, active_list=active_list)
+
+@app.route('/list/create', methods=['POST'])
+def create_list():
+    error = False
+    body = {}
+    try:
+        name = request.get_json()['name']
+        todoList = TodoList(name=name)
+        db.session.add(todoList)
+        db.session.commit()
+        body['id'] = todoList.id
+        body['name'] = todoList.name
+    except:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+    if error:
+        abort(500)
+    else:
+        return jsonify(body)
