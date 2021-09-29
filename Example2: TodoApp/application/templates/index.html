@@ -37,29 +37,38 @@
     </style>
   </head>
   <body>
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">Todos</h5>
-        <p class="card-text">Add a todo</p>
-        <form id="form">
-          <div class="input-group">
-            <input type="text" class="form-control" name="description" id="description">
-            <input type="submit" class="btn btn-outline-secondary" value="Add" /></button>
-          </div>
-
-        </form>
-        <ul id="todos">
-          {% for d in data %}
-          <li><input type="checkbox" data-id="{{ d.id }}" class="check-completed " 
-          {% if d.completed %} checked {% endif %}/> 
-          {{ d.description }}
-           <button class="delete-todo" data-id="{{ d.id }}">&cross;</button>
-          </li>
-          {% endfor %}
-    </ul>
+    <div class="list-wrapper">
+      <form id="form">
+        <input type="text" id="description" name="name" />
+        <input type="submit" value="Create" />
+      </form>
+      <div id="error" class="hidden">Something went wrong!</div>
+      <ul id="list">
+        {% for item in list %}
+        <li>
+          {{ item.name }}
+        </li>
+        {% endfor %}
+      </ul>
     </div>
-  </div>
+      
     <div id="error" class="hidden">Something went wrong</div>
+    <div class="todos-wrapper">
+      <form id="form">
+        <input type="text" id="description" name="description" />
+        <input type="submit" value="Create" />
+      </form>
+      <div id="error" class="hidden">Something went wrong!</div>
+      <ul id="todos">
+        {% for todo in todos %}
+        <li>
+          <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked {% endif %} />
+          {{ todo.description }}
+          <button class="delete-button" data-id="{{ todo.id }}">&cross;</button>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
