@@ -62,7 +62,7 @@ def get_list_todos(list_id):
     active_list = TodoList.query.get(list_id) #based on the list_id returns the current list route to view
     return render_template('index.html', todos=todos, lists=lists, active_list=active_list)
 
-@app.route('/list/create', methods=['POST'])
+@app.route('/lists/create', methods=['POST'])
 def create_list():
     error = False
     body = {}

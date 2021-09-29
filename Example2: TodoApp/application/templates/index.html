@@ -40,12 +40,13 @@
   </head>
   <body>
     <div class="list-wrapper">
-      <form id="form">
-        <input type="text" id="name" name="name" />
+      <h4>TODO LIST</h4>
+      <form id="list-form">
+        <input type="text" id="list-name" name="name" />
         <input type="submit" value="Add List" />
       </form>
       <div id="error" class="hidden">Something went wrong!</div>
-      <ul id="list">
+      <ul id="lists">
         {% for item in lists %}
           
         <li>
@@ -56,6 +57,7 @@
     </div>
       
     <div class="todos-wrapper">
+    <h4>TODO ITMES</h4>
     <h4>{{ active_list.name }}</h4>
       <form id="todo-form">
         <input type="text" id="description" name="description" />
@@ -90,8 +92,10 @@
 
         }
 
-        const checkboxes = document.querySelectorAll('.check-completed');
-        for (let i =0; i < checkboxes.length; i++) {
+
+
+        const todo_checkboxes = document.querySelectorAll('.check-completed');
+        for (let i =0; i < todo_checkboxes.length; i++) {
             const checkbox = checkboxes[i];
             checkbox.onchange = function (e) {
                 console.log('event', e);
@@ -137,6 +141,29 @@
             })
         }
 
+        document.getElementById('list-form').onsubmit  = function (e) {
+            e.preventDefault();
+            fetch('/lists/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'name' : document.getElementById('list-name').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (response) {
+                return response.json();
+            }).then(function (jsonResponse) {
+                console.log(jsonResponse);
+                const liItem = document.createElement('LI');
+                liItem.innerHTML = jsonResponse['name'];
+                document.getElementById('lists').appendChild(liItem);
+                document.getElementById('error').className = 'hidden';
+
+              }).catch(function () {
+                document.getElementById('error').className = '';
+            });
+        }
 
 
     </script>
